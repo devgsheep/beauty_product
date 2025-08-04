@@ -1,70 +1,182 @@
-# Getting Started with Create React App
+# Beauty_Product
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<img width="941" height="538" alt="Image" src="https://github.com/user-attachments/assets/44fa7146-5338-4432-8623-21b8cf0cdd37" />
 
-## Available Scripts
+## App.js
 
-In the project directory, you can run:
+```js
+import React, { useEffect, useState } from "react";
+import { getBeauty } from "./apis/beautyApi";
+import styled from "@emotion/styled";
+import BeautyList from "./components/BeautyList";
 
-### `npm start`
+const Header = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 50px;
+  background-color: #fff;
+  padding: 18px 0 10px;
+  box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 8px;
+  flex-direction: column;
+`;
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+const HeaderTitle = styled.h3`
+  margin-bottom: 5px;
+  font-size: 21px;
+`;
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+const HeaderText = styled.p`
+  font-size: 16px;
+  color: rgb(136, 136, 136);
+`;
 
-### `npm test`
+const Main = styled.div`
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+`;
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+function App() {
+  // js자리
+  const [beautyData, setBeautyData] = useState([]);
 
-### `npm run build`
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getBeauty();
+      if (data && data.products) {
+        setBeautyData(data.products);
+      }
+    };
+    fetchData();
+  }, []);
+  // jsx자리
+  return (
+    <div>
+      <Header>
+        <HeaderTitle>Beauty Product List</HeaderTitle>
+        <HeaderText>다양한 뷰티 제품을 한눈에 확인하세요</HeaderText>
+        <HeaderText>https://dummyjson.com/products API 사용 예제</HeaderText>
+      </Header>
+      <Main>
+        {beautyData.map(function (item, index) {
+          return (
+            <BeautyList
+              title={item.title}
+              price={item.price}
+              description={item.description}
+              images={item.images}
+              key={index}
+            ></BeautyList>
+          );
+        })}
+      </Main>
+    </div>
+  );
+}
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+export default App;
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## BeautyList.jsx
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```jsx
+/* eslint-disable react/prop-types */
 
-### `npm run eject`
+import styled from "@emotion/styled";
+import React from "react";
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+const ListCard = styled.div`
+  width: 700px;
+  padding: 18px 24px;
+  margin-bottom: 12px;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px #00000014;
+  margin-bottom: 20px;
+  &:hover {
+    transition:
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(101%);
+  }
+`;
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+const ListItem = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+`;
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+const ListProductImage = styled.img`
+  width: 74px;
+  height: 74px;
+  border-radius: 10px;
+  margin-right: 40px;
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+  border: 1px solid rgb(221, 221, 221);
+  background-color: rgb(248, 248, 248);
+`;
 
-## Learn More
+const ListTextWrap = styled.div`
+  flex: 1;
+`;
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+const ListTitle = styled.p`
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 5px;
+`;
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+const ListPrice = styled.p`
+  color: rgb(233, 30, 99);
+  font-weight: 500;
+  margin-bottom: 5px;
+`;
 
-### Code Splitting
+const ListText = styled.p`
+  font-size: 15px;
+  color: rgb(85, 85, 85);
+  text-align: center;
+`;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+function BeautyList({ title, price, description, images }) {
+  return (
+    <ListCard>
+      <ListItem>
+        <ListProductImage src={images[0]} alt={title}></ListProductImage>
+        <ListTextWrap>
+          <ListTitle>{title}</ListTitle>
+          <ListPrice>${price}</ListPrice>
+          <ListText>{description}</ListText>
+        </ListTextWrap>
+      </ListItem>
+    </ListCard>
+  );
+}
 
-### Analyzing the Bundle Size
+export default BeautyList;
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## beautyApi.js
 
-### Making a Progressive Web App
+```js
+import axios from "axios";
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+export const beautyUrl = "https://dummyjson.com/products";
+export const getBeauty = async () => {
+  try {
+    const res = await axios.get(beautyUrl);
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+```
